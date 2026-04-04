@@ -22,12 +22,23 @@ button_surface = pygame.Surface((menu_button_rect.width, menu_button_rect.height
 button_surface.fill((200, 50, 50))
 screen.fill((0, 0, 0))
 draw_surface.fill((100, 100, 100))
+font = pygame.font.SysFont("Arial", 18)
 pygame.display.set_caption("GRIS")
 pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
 pygame.mixer.music.play()
+def draw_menu():
+    overlay = draw_surface.copy()
+    overlay = pygame.transform.scale(overlay, (256, 128))
+    screen.blit(overlay, (0, 0))
+    menu_options = ["SAVE AND QUIT?", "A Cancel", "B Save And Quit", "C Reset"]
+    for i, text in enumerate(menu_options):
+        menu_text = font.render(text, True, (200, 200, 200))
+        screen.blit(menu_text, (0, 0 + (i * 20)))
+    pygame.display.flip()
 def redraw_x_y_list():
     global x_y_list
     lock = open("redraw.lock", 'w')
+    pygame.image.save(draw_surface, "gris_draw.png")
     pygame.event.get()
     pygame.mixer.music.load(os.path.join(base_dir, "files/sound/screammachine.wav"))
     pygame.mixer.music.play(loops=-1)
@@ -42,6 +53,8 @@ def redraw_x_y_list():
     pygame.mixer.music.stop()
     lock.close()
     os.remove("redraw.lock")
+    if os.path.isfile("autoexec.bat"):
+        os.system("start autoexec.bat")
     return
 while True:
     for event in pygame.event.get():
@@ -54,7 +67,7 @@ while True:
     if pos[1] > screen.get_size()[1]:
         pos = [129, 64]
     keys = pygame.key.get_pressed()
-    if not canvas_rect.collidepoint(pos) or not menu_button_rect.collidepoint(pos):
+    if not canvas_rect.collidepoint(pos) or not menu_button_rect.collidepoint(pos) and not menu:
         screen.fill((0, 0, 0))
     if not menu:
         if keys[pygame.K_LEFT]:
@@ -102,6 +115,7 @@ while True:
             pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
             pygame.mixer.music.play()
             menu = False
+            time.sleep(0.1)
             redraw_x_y_list()
             pygame.quit()
             sys.exit()
@@ -119,7 +133,8 @@ while True:
             pos = [129, 64]
 
 
-
+    if menu:
+        continue
 
 
     #print(pygame.mouse.get_pos())
@@ -130,7 +145,7 @@ while True:
             if keys_just_pressed[pygame.K_m]:
                 pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
                 pygame.mixer.music.play()
-    if canvas_rect.collidepoint(pos):
+    if canvas_rect.collidepoint(pos) and not menu:
          if keys[pygame.K_d]:
             rel_x = pos[0] - canvas_rect.x
             rel_y = pos[1] - canvas_rect.y
@@ -141,6 +156,7 @@ while True:
         pos[1] -= 4
         pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
         pygame.mixer.music.play()
+        draw_menu()
         menu = True
 
     
