@@ -59,7 +59,7 @@ def redraw_x_y_list():
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            redraw_x_y_list()
+            #redraw_x_y_list()
             pygame.quit()
             sys.exit()
     if pos[0] > screen.get_size()[0]:
