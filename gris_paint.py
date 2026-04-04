@@ -38,6 +38,9 @@ def draw_menu():
 def redraw_x_y_list():
     global x_y_list
     lock = open("redraw.lock", 'w')
+    log = open("log.txt", 'w', encoding="utf-8", errors='ignore')
+    for pos in x_y_list:
+        log.write(f"{pos[0]} {pos[1]}\n")
     pygame.image.save(draw_surface, "gris_draw.png")
     pygame.event.get()
     pygame.mixer.music.load(os.path.join(base_dir, "files/sound/screammachine.wav"))
@@ -52,6 +55,8 @@ def redraw_x_y_list():
         time.sleep(0.011)
     pygame.mixer.music.stop()
     lock.close()
+    log.close()
+
     os.remove("redraw.lock")
     if os.path.isfile("autoexec.bat"):
         os.system("start autoexec.bat")
