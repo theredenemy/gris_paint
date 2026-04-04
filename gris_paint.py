@@ -132,7 +132,11 @@ while True:
             menu = False
             pos = [129, 64]
 
-
+    if pygame.key.get_focused():
+                keys_just_pressed = pygame.key.get_just_pressed()
+                if keys_just_pressed[pygame.K_m]:
+                    pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
+                    pygame.mixer.music.play()
     if menu:
         continue
 
@@ -140,11 +144,7 @@ while True:
     #print(pygame.mouse.get_pos())
     screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
     screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
-    if pygame.key.get_focused():
-            keys_just_pressed = pygame.key.get_just_pressed()
-            if keys_just_pressed[pygame.K_m]:
-                pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
-                pygame.mixer.music.play()
+    
     if canvas_rect.collidepoint(pos) and not menu:
          if keys[pygame.K_d]:
             rel_x = pos[0] - canvas_rect.x
