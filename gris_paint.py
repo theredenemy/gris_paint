@@ -13,7 +13,6 @@ screen = pygame.display.set_mode((256, 128))
 clock = pygame.time.Clock()
 menu = False
 x_y_list = []
-rel_list = []
 pos = [129, 64]
 speed = 1
 cursor_img = pygame.transform.smoothscale(pygame.image.load(os.path.join(base_dir, "files/imgs/cursor.png")).convert_alpha(), (10, 10))
@@ -39,7 +38,7 @@ def redraw_x_y_list():
         screen.blit(cursor_img, pos)
         pygame.display.flip()
         clock.tick(60)
-        time.sleep(0.01)
+        time.sleep(0.011)
     pygame.mixer.music.stop()
     lock.close()
     os.remove("redraw.lock")
@@ -66,7 +65,51 @@ while True:
             pos[1] -= speed
         if keys[pygame.K_DOWN]:
             pos[1] += speed
-    print(pygame.mouse.get_pos())
+    else:
+        if keys[pygame.K_a]:
+            screen.fill((0, 0, 0))
+            draw_surface.fill((255, 255, 255))
+            button_surface.fill((200, 50, 50))
+            
+            draw_surface.fill((100, 100, 100))
+            pygame.display.flip()
+            for x, y in x_y_list:
+                screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
+                screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
+                rel_x = x - canvas_rect.x
+                rel_y = y - canvas_rect.y
+                pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+                pygame.display.flip()
+                #clock.tick(60)
+            pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
+            pygame.mixer.music.play()
+            menu = False
+        if keys[pygame.K_b]:
+            screen.fill((0, 0, 0))
+            draw_surface.fill((255, 255, 255))
+            button_surface.fill((200, 50, 50))
+            
+            draw_surface.fill((100, 100, 100))
+            pygame.display.flip()
+            for x, y in x_y_list:
+                screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
+                screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
+                rel_x = x - canvas_rect.x
+                rel_y = y - canvas_rect.y
+                pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+                pygame.display.flip()
+                #clock.tick(60)
+            pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
+            pygame.mixer.music.play()
+            menu = False
+            redraw_x_y_list()
+            pygame.quit()
+            sys.exit()
+
+
+
+
+    #print(pygame.mouse.get_pos())
     screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
     screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
     if pygame.key.get_focused():
@@ -80,6 +123,13 @@ while True:
             rel_y = pos[1] - canvas_rect.y
             x_y_list.append((pos[0], pos[1]))
             pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+    if menu_button_rect.collidepoint(pos):
+        pos[0] -= 4
+        pos[1] -= 4
+        pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
+        pygame.mixer.music.play()
+        menu = True
+
     
     screen.blit(cursor_img, pos)
     
