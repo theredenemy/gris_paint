@@ -105,6 +105,19 @@ while True:
             redraw_x_y_list()
             pygame.quit()
             sys.exit()
+        if keys[pygame.K_c]:
+            screen.fill((0, 0, 0))
+            draw_surface.fill((255, 255, 255))
+            button_surface.fill((200, 50, 50))
+            
+            draw_surface.fill((100, 100, 100))
+            pygame.display.flip()
+            x_y_list = []
+            pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
+            pygame.mixer.music.play()
+            menu = False
+            pos = [129, 64]
+
 
 
 
