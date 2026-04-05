@@ -12,6 +12,7 @@ menu_button_rect = pygame.Rect(233, 104, 32, 32)
 screen = pygame.display.set_mode((256, 128))
 clock = pygame.time.Clock()
 menu = False
+draw_circle = False
 x_y_list = []
 pos = [129, 64]
 speed = 1
@@ -61,12 +62,21 @@ def redraw_x_y_list():
     if os.path.isfile("autoexec.bat"):
         os.system("start autoexec.bat")
     return
+def draw():
+    if canvas_rect.collidepoint(pos) and not menu:
+         
+        rel_x = pos[0] - canvas_rect.x
+        rel_y = pos[1] - canvas_rect.y
+        x_y_list.append((pos[0], pos[1]))
+        pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             #redraw_x_y_list()
             pygame.quit()
             sys.exit()
+    draw_circle = False
     if pos[0] > screen.get_size()[0]:
         pos = [129, 64]
     if pos[1] > screen.get_size()[1]:
@@ -77,12 +87,16 @@ while True:
     if not menu:
         if keys[pygame.K_LEFT]:
             pos[0] -= speed
+            draw()
         if keys[pygame.K_RIGHT]:
             pos[0] += speed
+            draw()
         if keys[pygame.K_UP]:
             pos[1] -= speed
+            draw()
         if keys[pygame.K_DOWN]:
             pos[1] += speed
+            draw()
     else:
         if keys[pygame.K_a]:
             screen.fill((0, 0, 0))
@@ -149,13 +163,6 @@ while True:
     #print(pygame.mouse.get_pos())
     screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
     screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
-    
-    if canvas_rect.collidepoint(pos) and not menu:
-         if keys[pygame.K_d]:
-            rel_x = pos[0] - canvas_rect.x
-            rel_y = pos[1] - canvas_rect.y
-            x_y_list.append((pos[0], pos[1]))
-            pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
     if menu_button_rect.collidepoint(pos):
         pos[0] -= 4
         pos[1] -= 4
