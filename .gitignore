@@ -2,6 +2,6 @@
 /build
 /dist
 *.spec
-redraw.lock
+*.lock
 gris_draw.png
 log.txt

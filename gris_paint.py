@@ -70,6 +70,20 @@ def draw():
         x_y_list.append((pos[0], pos[1]))
         pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
 
+def x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface):
+    lock = open("redraw_x_y.lock", 'w')
+    for x, y in x_y_list:
+        screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
+        screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
+        rel_x = x - canvas_rect.x
+        rel_y = y - canvas_rect.y
+        pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+        pygame.display.flip()
+        #clock.tick(60)
+    lock.close()
+    os.remove("redraw_x_y.lock")
+    return
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -105,14 +119,7 @@ while True:
             
             draw_surface.fill((100, 100, 100))
             pygame.display.flip()
-            for x, y in x_y_list:
-                screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
-                screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
-                rel_x = x - canvas_rect.x
-                rel_y = y - canvas_rect.y
-                pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
-                pygame.display.flip()
-                #clock.tick(60)
+            x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
             pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
             pygame.mixer.music.play()
             menu = False
@@ -123,14 +130,7 @@ while True:
             
             draw_surface.fill((100, 100, 100))
             pygame.display.flip()
-            for x, y in x_y_list:
-                screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
-                screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
-                rel_x = x - canvas_rect.x
-                rel_y = y - canvas_rect.y
-                pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
-                pygame.display.flip()
-                #clock.tick(60)
+            x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
             pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
             pygame.mixer.music.play()
             menu = False
