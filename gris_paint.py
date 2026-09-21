@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 import time
+import json
 pygame.init()
 pygame.mixer.init()
 pygame.event.get()
@@ -14,6 +15,7 @@ clock = pygame.time.Clock()
 menu = False
 draw_circle = False
 x_y_list = []
+
 pos = [129, 64]
 speed = 1
 cursor_img = pygame.transform.smoothscale(pygame.image.load(os.path.join(base_dir, "files/imgs/cursor.png")).convert_alpha(), (10, 10))
@@ -27,6 +29,11 @@ font = pygame.font.SysFont("Arial", 18)
 pygame.display.set_caption("GRIS")
 pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
 pygame.mixer.music.play()
+def save_paint_data(xylist=[], pos=[129, 64]):
+    data = {"pos": pos, "x_y_list": xylist}
+    with open("draw.json", 'w', encoding='utf-8', errors='ignore') as f:
+        json.dump(data, f)
+    return True
 def draw_menu():
     overlay = draw_surface.copy()
     overlay = pygame.transform.scale(overlay, (256, 128))
@@ -38,11 +45,14 @@ def draw_menu():
     pygame.display.flip()
 def redraw_x_y_list():
     global x_y_list
+    
     lock = open("redraw.lock", 'w')
     log = open("log.txt", 'w', encoding="utf-8", errors='ignore')
     for pos in x_y_list:
         log.write(f"{pos[0]} {pos[1]}\n")
-    pygame.image.save(draw_surface, "gris_draw.png")
+    draw_surface_sc = pygame.Surface((canvas_rect.width, canvas_rect.height), pygame.SRCALPHA)
+    x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface_sc, button_surface)
+    pygame.image.save(draw_surface_sc, "gris_draw.png")
     pygame.event.get()
     pygame.mixer.music.load(os.path.join(base_dir, "files/sound/screammachine.wav"))
     pygame.mixer.music.play(loops=-1)
@@ -69,6 +79,7 @@ def draw():
         rel_y = pos[1] - canvas_rect.y
         x_y_list.append((pos[0], pos[1]))
         pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
+        save_paint_data(x_y_list, pos)
 
 def x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface):
     lock = open("redraw_x_y.lock", 'w')
@@ -84,10 +95,17 @@ def x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_s
     os.remove("redraw_x_y.lock")
     return
 
+if os.path.isfile("draw.json"):
+    with open("draw.json", 'r', encoding='utf-8', errors='ignore') as f:
+        json_data = json.load(f)
+        x_y_list = json_data["x_y_list"]
+        pos = json_data["pos"]
+    x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             #redraw_x_y_list()
+            save_paint_data(x_y_list, pos)
             pygame.quit()
             sys.exit()
     draw_circle = False
@@ -116,7 +134,7 @@ while True:
             screen.fill((0, 0, 0))
             draw_surface.fill((255, 255, 255))
             button_surface.fill((200, 50, 50))
-            
+            save_paint_data(x_y_list, pos)
             draw_surface.fill((100, 100, 100))
             pygame.display.flip()
             x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
@@ -127,7 +145,7 @@ while True:
             screen.fill((0, 0, 0))
             draw_surface.fill((255, 255, 255))
             button_surface.fill((200, 50, 50))
-            
+            save_paint_data([])
             draw_surface.fill((100, 100, 100))
             pygame.display.flip()
             x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
@@ -136,13 +154,14 @@ while True:
             menu = False
             time.sleep(0.1)
             redraw_x_y_list()
+            os.remove("draw.json")
             pygame.quit()
             sys.exit()
         if keys[pygame.K_c]:
             screen.fill((0, 0, 0))
             draw_surface.fill((255, 255, 255))
             button_surface.fill((200, 50, 50))
-            
+            save_paint_data([])
             draw_surface.fill((100, 100, 100))
             pygame.display.flip()
             x_y_list = []
@@ -166,6 +185,7 @@ while True:
     if menu_button_rect.collidepoint(pos):
         pos[0] -= 4
         pos[1] -= 4
+        save_paint_data(x_y_list, pos)
         pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
         pygame.mixer.music.play()
         draw_menu()
