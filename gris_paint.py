@@ -79,7 +79,9 @@ def draw():
         rel_y = pos[1] - canvas_rect.y
         x_y_list.append((pos[0], pos[1]))
         pygame.draw.circle(draw_surface, (0, 0, 0), (rel_x, rel_y), 5)
-        save_paint_data(x_y_list, pos)
+        
+    save_paint_data(x_y_list, pos)
+    return
 
 def x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface):
     lock = open("redraw_x_y.lock", 'w')
