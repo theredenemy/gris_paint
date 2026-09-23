@@ -3,6 +3,7 @@ import sys
 import os
 import time
 import json
+import random
 pygame.init()
 pygame.mixer.init()
 pygame.event.get()
@@ -100,9 +101,10 @@ def x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_s
 if os.path.isfile("draw.json"):
     with open("draw.json", 'r', encoding='utf-8', errors='ignore') as f:
         json_data = json.load(f)
-        x_y_list = json_data["x_y_list"]
-        pos = json_data["pos"]
+        x_y_list = json_data.get("x_y_list", [])
+        pos = json_data.get("pos", [129, 64])
     x_y_list_redraw_menu(canvas_rect, menu_button_rect, screen, x_y_list, draw_surface, button_surface)
+save_paint_data(x_y_list, pos)
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -111,9 +113,15 @@ while True:
             pygame.quit()
             sys.exit()
     draw_circle = False
+
     if pos[0] > screen.get_size()[0]:
         pos = [129, 64]
+    elif pos[0] < 0 and pos[0] < screen.get_size()[0]:
+        pos = [129, 64]
+
     if pos[1] > screen.get_size()[1]:
+        pos = [129, 64]
+    elif pos[1] < 0 and pos[1] < screen.get_size()[1]:
         pos = [129, 64]
     keys = pygame.key.get_pressed()
     if not canvas_rect.collidepoint(pos) or not menu_button_rect.collidepoint(pos) and not menu:
@@ -130,6 +138,18 @@ while True:
             draw()
         if keys[pygame.K_DOWN]:
             pos[1] += speed
+            draw()
+        if keys[pygame.K_a]:
+            if random.randint(0, 1) == 1:
+                pos[0] = pos[0] - random.randint(0, 5) + speed
+                pos[1] = pos[1] - random.randint(0, 5) + speed
+                draw()
+            else:
+                pos[0] = pos[0] + random.randint(0, 5) - speed
+                pos[1] = pos[1] + random.randint(0, 5) - speed 
+                draw()
+        if keys[pygame.K_s]:
+            pos[0], pos[1] = pygame.mouse.get_pos()
             draw()
     else:
         if keys[pygame.K_a]:
@@ -177,24 +197,24 @@ while True:
                 if keys_just_pressed[pygame.K_m]:
                     pygame.mixer.music.load(os.path.join(base_dir, "files/sound/view1.wav"))
                     pygame.mixer.music.play()
-    if menu:
-        continue
-
+    # if menu:
+    #     continue
 
     #print(pygame.mouse.get_pos())
-    screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
-    screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
-    if menu_button_rect.collidepoint(pos):
-        pos[0] -= 4
-        pos[1] -= 4
-        save_paint_data(x_y_list, pos)
-        pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
-        pygame.mixer.music.play()
-        draw_menu()
-        menu = True
-
+    if not menu:
+        screen.blit(draw_surface, (canvas_rect.x, canvas_rect.y))
+        screen.blit(button_surface, (menu_button_rect.x, menu_button_rect.y))
+        if menu_button_rect.collidepoint(pos):
+            pos[0] -= 4
+            pos[1] -= 4
+            save_paint_data(x_y_list, pos)
+            pygame.mixer.music.load(os.path.join(base_dir, "files/sound/button24.wav"))
+            pygame.mixer.music.play()
+            draw_menu()
+            menu = True
+        screen.blit(cursor_img, pos)
+        
+        pygame.display.flip()
+        clock.tick(60)
     
-    screen.blit(cursor_img, pos)
     
-    pygame.display.flip()
-    clock.tick(60)
