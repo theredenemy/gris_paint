@@ -139,7 +139,7 @@ while True:
         if keys[pygame.K_DOWN]:
             pos[1] += speed
             draw()
-        if keys[pygame.K_a]:
+        if keys[pygame.K_r]:
             if random.randint(0, 1) == 1:
                 pos[0] = pos[0] - random.randint(0, 5) + speed
                 pos[1] = pos[1] - random.randint(0, 5) + speed
